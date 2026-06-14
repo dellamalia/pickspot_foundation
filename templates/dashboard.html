@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-6">
+
+  <!-- Header -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <div>
+      <h1 class="text-[#131086] font-black text-2xl">Dashboard 📊</h1>
+      <p class="text-gray-400 text-sm">
+        Selamat datang, <span class="text-[#E44E9A] font-bold">{{ session.nama }}</span>
+        <span class="bg-[#131086]/10 text-[#131086] text-[10px] font-black px-2 py-0.5 rounded-full ml-1 uppercase">
+          {{ session.role }}
+        </span>
+      </p>
+    </div>
+    <a href="/add_spot"
+       class="bg-[#E44E9A] text-white font-black px-4 py-2.5 rounded-2xl text-sm
+              hover:bg-[#131086] transition flex items-center gap-2">
+      ＋ Tambah Spot
+    </a>
+  </div>
+
+  <!-- ── Summary Cards ─────────────────────────────── -->
+  <div class="grid grid-cols-3 gap-3 mb-6">
+    <div class="bg-[#131086] text-white rounded-3xl p-5 text-center shadow-lg">
+      <p class="text-4xl font-black">{{ total_spots }}</p>
+      <p class="text-white/60 text-xs mt-1 font-semibold uppercase tracking-wide">Total Spot</p>
+    </div>
+    <div class="bg-[#E44E9A] text-white rounded-3xl p-5 text-center shadow-lg">
+      <p class="text-4xl font-black">{{ total_bookings }}</p>
+      <p class="text-white/60 text-xs mt-1 font-semibold uppercase tracking-wide">Total Booking</p>
+    </div>
+    <div class="bg-[#1F6232] text-white rounded-3xl p-5 text-center shadow-lg">
+      <p class="text-4xl font-black">{{ total_members }}</p>
+      <p class="text-white/60 text-xs mt-1 font-semibold uppercase tracking-wide">Total Member</p>
+    </div>
+  </div>
+
+  <!-- ── Quick Links ────────────────────────────────── -->
+  <div class="flex flex-wrap gap-2 mb-6">
+    <a href="/bookings"
+       class="bg-white border-2 border-[#131086] text-[#131086] font-bold px-4 py-2 rounded-xl
+              text-sm hover:bg-[#131086] hover:text-white transition flex items-center gap-2">
+      📋 Laporan Booking
+    </a>
+    <a href="/"
+       class="bg-white border-2 border-[#E44E9A] text-[#E44E9A] font-bold px-4 py-2 rounded-xl
+              text-sm hover:bg-[#E44E9A] hover:text-white transition flex items-center gap-2">
+      🏠 Lihat Homepage
+    </a>
+  </div>
+
+  <!-- ── Spots Table ────────────────────────────────── -->
+  <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
+      <h2 class="text-[#131086] font-black text-lg">Kelola Data Spot</h2>
+      <span class="text-[#1F6232] text-xs font-bold bg-[#1F6232]/10 px-2 py-1 rounded-full">
+        {{ spots|length }} spot
+      </span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm min-w-[640px]">
+        <thead class="bg-[#FEF9ED]">
+          <tr>
+            <th class="text-left py-3 px-5 text-[#131086] font-black text-xs uppercase tracking-wide">Nama Spot</th>
+            <th class="text-left py-3 px-4 text-[#131086] font-black text-xs uppercase tracking-wide">Lokasi</th>
+            <th class="text-left py-3 px-4 text-[#131086] font-black text-xs uppercase tracking-wide">Harga</th>
+            <th class="text-center py-3 px-4 text-[#131086] font-black text-xs uppercase tracking-wide">Stok</th>
+            <th class="text-center py-3 px-4 text-[#131086] font-black text-xs uppercase tracking-wide">Booking</th>
+            <th class="text-center py-3 px-4 text-[#131086] font-black text-xs uppercase tracking-wide">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          {% for spot in spots %}
+          <tr class="hover:bg-[#FEF9ED]/50 transition-colors">
+            <td class="py-3.5 px-5 font-bold text-[#131086]">{{ spot.nama_spot }}</td>
+            <td class="py-3.5 px-4 text-gray-500 text-xs">📍 {{ spot.lokasi }}</td>
+            <td class="py-3.5 px-4 font-semibold text-[#131086]">
+              Rp{{ "{:,.0f}".format(spot.harga_estimasi).replace(',', '.') }}
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="bg-[#1F6232]/10 text-[#1F6232] font-black text-xs px-2.5 py-1 rounded-full">
+                {{ spot.stok_booking }}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="bg-[#E44E9A]/10 text-[#E44E9A] font-black text-xs px-2.5 py-1 rounded-full">
+                {{ spot.jml_booking }}
+              </span>
+            </td>
+            <td class="py-3.5 px-4">
+              <div class="flex items-center justify-center gap-2">
+                <a href="/edit_spot/{{ spot.id_spot }}"
+                   class="bg-[#131086] text-white text-xs font-bold px-3 py-1.5 rounded-xl
+                          hover:bg-[#E44E9A] transition">
+                  Edit
+                </a>
+                {% if session.role == 'admin' %}
+                <a href="/delete_spot/{{ spot.id_spot }}"
+                   onclick="return confirm('Yakin hapus spot {{ spot.nama_spot }}?')"
+                   class="bg-red-50 text-red-500 text-xs font-bold px-3 py-1.5 rounded-xl
+                          hover:bg-red-500 hover:text-white transition">
+                  Hapus
+                </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-16 text-gray-400">
+              <p class="text-4xl mb-2">🏪</p>
+              <p class="font-semibold">Belum ada data spot.</p>
+              <a href="/add_spot" class="text-[#E44E9A] font-bold text-sm hover:underline mt-1 inline-block">+ Tambah Spot Pertama</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

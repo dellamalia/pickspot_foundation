@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- ══════════════════════════════════════════
+     HERO – Search Panel
+══════════════════════════════════════════ -->
+<section class="max-w-md mx-auto px-4 pt-5 pb-3">
+  <div class="bg-[#131086] rounded-3xl p-5 shadow-xl">
+
+    <!-- Location label -->
+    <div class="flex items-center gap-2 mb-1">
+      <span class="text-[#E44E9A] text-xs font-black uppercase tracking-widest">📍 LOCATION</span>
+    </div>
+    <p class="text-white font-black text-base mb-4 leading-tight">
+      Bandung, Bandung City, West Java
+    </p>
+
+    <!-- Search form -->
+    <form method="GET" action="/" class="space-y-3">
+      <div class="bg-white/10 backdrop-blur rounded-2xl p-1 flex gap-2">
+        <select name="lokasi"
+                class="flex-1 bg-transparent text-white placeholder-white/60 text-sm font-semibold px-3 py-2.5 outline-none appearance-none">
+          <option value="" class="text-[#131086]">📍 Pilih Kota</option>
+          <option value="Kota Bandung"  class="text-[#131086]" {{ 'selected' if lokasi == 'Kota Bandung' }}>Kota Bandung</option>
+          <option value="Jatinangor"    class="text-[#131086]" {{ 'selected' if lokasi == 'Jatinangor'   }}>Jatinangor</option>
+          <option value="Cimahi"        class="text-[#131086]" {{ 'selected' if lokasi == 'Cimahi'       }}>Cimahi</option>
+        </select>
+
+        <input type="date" name="tanggal" value="{{ tanggal }}"
+               class="bg-transparent text-white text-xs font-semibold px-2 py-2.5 outline-none w-32">
+
+        <button type="submit"
+                class="bg-[#E44E9A] text-white font-black text-sm px-4 py-2.5 rounded-xl hover:bg-white hover:text-[#E44E9A] transition whitespace-nowrap">
+          Find Spot
+        </button>
+      </div>
+    </form>
+
+    {% if lokasi %}
+    <p class="text-white/60 text-xs mt-2">
+      Menampilkan spot di <span class="text-[#E44E9A] font-bold">{{ lokasi }}</span>
+      <a href="/" class="ml-2 underline hover:text-white">Hapus filter</a>
+    </p>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     YOUR NEXT – Horizontal preview strip
+══════════════════════════════════════════ -->
+<section class="max-w-md mx-auto px-4 pb-3">
+  <h2 class="text-[#E44E9A] font-black text-base italic mb-3 tracking-tight">✨ YOUR NEXT</h2>
+
+  <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+    {% for spot in spots[:5] %}
+    <a href="#spot-{{ spot.id_spot }}"
+       class="min-w-[130px] bg-white rounded-2xl overflow-hidden shadow-sm flex-shrink-0
+              hover:shadow-md transition-shadow border border-gray-100">
+      <!-- Mini thumbnail -->
+      <div class="h-[72px] relative flex items-center justify-center
+        {% if loop.index == 1 %}bg-gradient-to-br from-[#131086] to-[#E44E9A]
+        {% elif loop.index == 2 %}bg-gradient-to-br from-[#E44E9A] to-[#1F6232]
+        {% elif loop.index == 3 %}bg-gradient-to-br from-[#1F6232] to-[#131086]
+        {% elif loop.index == 4 %}bg-gradient-to-br from-[#E44E9A]/80 to-[#131086]
+        {% else %}bg-gradient-to-br from-[#131086]/80 to-[#1F6232]{% endif %}">
+        <span class="text-2xl">🏪</span>
+        <span class="absolute bottom-1 right-1.5 bg-black/40 text-white text-[10px]
+                     font-black px-1.5 py-0.5 rounded-full">⭐ {{ spot.rating }}</span>
+      </div>
+      <div class="p-2">
+        <p class="text-[#131086] font-black text-[11px] leading-tight line-clamp-2">
+          {{ spot.nama_spot }}
+        </p>
+        <p class="text-[#1F6232] text-[10px] font-bold mt-0.5">{{ spot.lokasi }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     HANGOUT SPOTS – Full card grid
+══════════════════════════════════════════ -->
+<section class="max-w-md mx-auto px-4 pb-28">
+
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-[#131086] font-black text-base tracking-tight">🗺️ HANGOUT SPOT</h2>
+    <span class="text-[#1F6232] text-xs font-bold bg-[#1F6232]/10 px-2 py-1 rounded-full">
+      {{ spots|length }} tempat
+    </span>
+  </div>
+
+  <!-- ── Time-slot rows (simulating pitch deck UI) ── -->
+  {% set time_slots = [('10.00 – 12.00', spots[:3]), ('12.00 – 14.00', spots[3:6]), ('14.00 – 16.00', spots[6:])] %}
+  {% for slot_label, slot_spots in time_slots %}
+    {% if slot_spots %}
+    <div class="mb-5">
+      <div class="inline-flex items-center gap-2 bg-[#131086] text-white text-xs font-black
+                  px-3 py-1 rounded-full mb-3">
+        🕙 {{ slot_label }}
+      </div>
+
+      <div class="space-y-4">
+        {% for spot in slot_spots %}
+        <div id="spot-{{ spot.id_spot }}"
+             class="bg-white rounded-3xl overflow-hidden shadow-md
+                    hover:shadow-xl transition-all duration-200 border border-gray-50/80">
+
+          <!-- Card banner -->
+          <div class="h-44 relative flex items-end
+            {% if loop.index % 3 == 1 %}bg-gradient-to-br from-[#131086] via-[#131086]/80 to-[#E44E9A]/50
+            {% elif loop.index % 3 == 2 %}bg-gradient-to-br from-[#1F6232] via-[#1F6232]/70 to-[#131086]/60
+            {% else %}bg-gradient-to-br from-[#E44E9A]/80 via-[#131086]/60 to-[#1F6232]/50{% endif %}">
+
+            <!-- Emoji icon (placeholder for real image) -->
+            <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                         text-5xl opacity-70 select-none">🏪</span>
+
+            <!-- Rating badge -->
+            <span class="absolute top-3 right-3 bg-[#E44E9A] text-white text-xs font-black
+                         px-2.5 py-1 rounded-full shadow">
+              ⭐ {{ spot.rating }}
+            </span>
+
+            <!-- Stok badge -->
+            <span class="absolute top-3 left-3 bg-[#1F6232] text-white text-xs font-bold
+                         px-2 py-1 rounded-full">
+              {{ spot.stok_booking }} slot
+            </span>
+
+            <!-- Location chip -->
+            <span class="relative z-10 m-4 bg-[#131086]/80 backdrop-blur text-white
+                         text-xs font-semibold px-3 py-1.5 rounded-xl">
+              📍 {{ spot.lokasi }}
+            </span>
+          </div>
+
+          <!-- Card body -->
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-1.5">
+              <h3 class="text-[#131086] font-black text-sm leading-tight flex-1 pr-3">
+                {{ spot.nama_spot }}
+              </h3>
+            </div>
+
+            <p class="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">
+              {{ spot.deskripsi or 'Spot hangout keren di ' ~ spot.lokasi ~ '.' }}
+            </p>
+
+            <!-- Price + CTA -->
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[#131086]/40 text-[10px] font-semibold uppercase tracking-wide">Estimasi</p>
+                <p class="text-[#131086] font-black text-sm">
+                  Rp{{ "{:,.0f}".format(spot.harga_estimasi).replace(',', '.') }}
+                </p>
+              </div>
+
+              {% if session.get('role') == 'member' %}
+                <a href="/book/{{ spot.id_spot }}"
+                   class="bg-[#131086] text-white text-sm font-black px-5 py-2.5 rounded-2xl
+                          hover:bg-[#E44E9A] active:scale-95 transition-all">
+                  Book Now
+                </a>
+
+              {% elif session.get('role') in ['admin','staff'] %}
+                <div class="flex gap-2">
+                  <a href="/edit_spot/{{ spot.id_spot }}"
+                     class="bg-[#1F6232]/10 text-[#1F6232] text-xs font-bold px-3 py-2 rounded-xl
+                            hover:bg-[#1F6232] hover:text-white transition">Edit</a>
+                  <a href="/delete_spot/{{ spot.id_spot }}"
+                     onclick="return confirm('Hapus spot ini?')"
+                     class="bg-red-50 text-red-400 text-xs font-bold px-3 py-2 rounded-xl
+                            hover:bg-red-500 hover:text-white transition">Hapus</a>
+                </div>
+
+              {% else %}
+                <a href="/login"
+                   class="bg-[#E44E9A] text-white text-sm font-black px-5 py-2.5 rounded-2xl
+                          hover:bg-[#131086] active:scale-95 transition-all">
+                  Login to Book
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
+
+  <!-- Empty state -->
+  {% if not spots %}
+  <div class="text-center py-20">
+    <span class="text-6xl block mb-4">😿</span>
+    <p class="text-[#131086] font-black text-lg">Spot tidak ditemukan</p>
+    <p class="text-gray-400 text-sm mt-1">Coba ubah filter lokasi kamu</p>
+    <a href="/" class="inline-block mt-4 bg-[#E44E9A] text-white font-bold px-5 py-2.5 rounded-2xl text-sm hover:bg-[#131086] transition">
+      Lihat Semua Spot
+    </a>
+  </div>
+  {% endif %}
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     BOTTOM NAVIGATION BAR
+══════════════════════════════════════════ -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-gray-100 shadow-2xl">
+  <div class="max-w-md mx-auto flex justify-around py-2.5 px-4">
+
+    <a href="/" class="flex flex-col items-center gap-0.5 group">
+      <span class="text-xl">🏠</span>
+      <span class="text-[10px] font-black text-[#E44E9A]">Home</span>
+    </a>
+
+    <a href="/?lokasi=Kota+Bandung" class="flex flex-col items-center gap-0.5 group">
+      <span class="text-xl">🔍</span>
+      <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Explore</span>
+    </a>
+
+    {% if session.get('id_user') %}
+      {% if session.get('role') in ['admin','staff'] %}
+      <a href="/dashboard" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">📊</span>
+        <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Dashboard</span>
+      </a>
+      <a href="/bookings" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">📋</span>
+        <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Bookings</span>
+      </a>
+      {% else %}
+      <a href="#" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">📋</span>
+        <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">My Bookings</span>
+      </a>
+      <a href="/logout" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">👤</span>
+        <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Profil</span>
+      </a>
+      {% endif %}
+    {% else %}
+    <a href="/register" class="flex flex-col items-center gap-0.5 group">
+      <span class="text-xl">✨</span>
+      <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Daftar</span>
+    </a>
+    <a href="/login" class="flex flex-col items-center gap-0.5 group">
+      <span class="text-xl">🔐</span>
+      <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Login</span>
+    </a>
+    {% endif %}
+
+  </div>
+</nav>
+
+{% endblock %}
