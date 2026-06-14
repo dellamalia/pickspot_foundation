@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-6 pb-28">
+
+  <h1 class="text-[#131086] font-black text-2xl mb-2">Explore 🔍</h1>
+  <p class="text-gray-400 text-sm mb-6">Semua spot hangout tersedia</p>
+
+  <!-- Filter by kota -->
+  <div class="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
+    <a href="/explore" class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-black
+      {{ 'bg-[#131086] text-white' if not kota else 'bg-white text-[#131086] border-2 border-gray-100' }}">
+      Semua
+    </a>
+    <a href="/explore?kota=Kota+Bandung" class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-black
+      {{ 'bg-[#131086] text-white' if kota == 'Kota Bandung' else 'bg-white text-[#131086] border-2 border-gray-100' }}">
+      Kota Bandung
+    </a>
+    <a href="/explore?kota=Jatinangor" class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-black
+      {{ 'bg-[#131086] text-white' if kota == 'Jatinangor' else 'bg-white text-[#131086] border-2 border-gray-100' }}">
+      Jatinangor
+    </a>
+    <a href="/explore?kota=Cimahi" class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-black
+      {{ 'bg-[#131086] text-white' if kota == 'Cimahi' else 'bg-white text-[#131086] border-2 border-gray-100' }}">
+      Cimahi
+    </a>
+  </div>
+
+  <!-- Spot list -->
+  {% if spots %}
+  <div class="space-y-3">
+    {% for spot in spots %}
+    <div class="bg-white rounded-2xl p-4 shadow-sm flex gap-4 items-center border border-gray-50">
+      <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0
+        {% if loop.index % 3 == 1 %}bg-gradient-to-br from-[#131086] to-[#E44E9A]
+        {% elif loop.index % 3 == 2 %}bg-gradient-to-br from-[#E44E9A] to-[#1F6232]
+        {% else %}bg-gradient-to-br from-[#1F6232] to-[#131086]{% endif %}">
+        <span class="text-2xl">🏪</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-[#131086] font-black text-sm truncate">{{ spot.nama_spot }}</p>
+        <p class="text-gray-400 text-xs">📍 {{ spot.lokasi }}</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="text-[#E44E9A] text-xs font-bold">⭐ {{ spot.rating }}</span>
+          <span class="text-gray-300 text-xs">·</span>
+          <span class="text-[#131086] text-xs font-bold">Rp{{ "{:,.0f}".format(spot.harga_estimasi).replace(',', '.') }}</span>
+        </div>
+      </div>
+      {% if session.get('role') == 'member' %}
+      <a href="/book/{{ spot.id_spot }}"
+         class="bg-[#E44E9A] text-white text-xs font-black px-3 py-2 rounded-xl flex-shrink-0 hover:bg-[#131086] transition">
+        Book
+      </a>
+      {% else %}
+      <a href="/login"
+         class="bg-[#131086] text-white text-xs font-black px-3 py-2 rounded-xl flex-shrink-0 hover:bg-[#E44E9A] transition">
+        Login
+      </a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-20">
+    <span class="text-6xl block mb-4">🔍</span>
+    <p class="text-[#131086] font-black text-lg">Spot tidak ditemukan</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
