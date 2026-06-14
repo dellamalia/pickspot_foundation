@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-6 pb-28">
+
+  <h1 class="text-[#131086] font-black text-2xl mb-6">Profil 👤</h1>
+
+  <div class="bg-white rounded-3xl p-6 shadow-sm space-y-4 mb-4">
+    <div class="flex items-center gap-4">
+      <div class="w-16 h-16 rounded-full bg-[#131086] flex items-center justify-center text-white text-2xl font-black">
+        {{ session.nama[0].upper() }}
+      </div>
+      <div>
+        <p class="text-[#131086] font-black text-lg">{{ session.nama }}</p>
+        <span class="bg-[#E44E9A]/10 text-[#E44E9A] text-xs font-black px-2 py-0.5 rounded-full uppercase">
+          {{ session.role }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <a href="/my-bookings"
+     class="flex items-center justify-between bg-white rounded-2xl px-5 py-4 shadow-sm mb-3 hover:bg-[#FEF9ED] transition">
+    <span class="text-[#131086] font-bold">📋 My Bookings</span>
+    <span class="text-gray-300">›</span>
+  </a>
+
+  <a href="/logout"
+     class="w-full block text-center bg-red-50 text-red-400 font-black py-4 rounded-2xl hover:bg-red-500 hover:text-white transition">
+    Logout 🚪
+  </a>
+
+</div>
+{% endblock %}
