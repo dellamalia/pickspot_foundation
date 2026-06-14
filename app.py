@@ -20,7 +20,7 @@ DB = dict(
     port= 4000,
     user= "hLJX4qyXZRc23dw.root",
     password= "7UoqtuH0kUfCjhLn",
-    database= "sys"
+    database= "test"
 )
 
 
