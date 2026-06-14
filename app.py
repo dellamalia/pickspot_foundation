@@ -221,6 +221,11 @@ def update_booking_status(id):
     flash('Status booking diperbarui.', 'success')
     return redirect(url_for('bookings_report'))
 
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
 @app.route('/my-bookings')
 @login_required
 def my_bookings():
