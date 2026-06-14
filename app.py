@@ -221,5 +221,22 @@ def update_booking_status(id):
     flash('Status booking diperbarui.', 'success')
     return redirect(url_for('bookings_report'))
 
+@app.route('/my-bookings')
+@login_required
+def my_bookings():
+    db  = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        SELECT b.id_booking, s.nama_spot, s.lokasi, s.harga_estimasi,
+               b.tanggal_waktu, b.status
+        FROM bookings b
+        JOIN spots s ON b.id_spot = s.id_spot
+        WHERE b.id_user = %s
+        ORDER BY b.tanggal_waktu DESC
+    """, (session['id_user'],))
+    bookings = cur.fetchall()
+    db.close()
+    return render_template('my_bookings.html', bookings=bookings)
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
