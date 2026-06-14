@@ -221,6 +221,19 @@ def update_booking_status(id):
     flash('Status booking diperbarui.', 'success')
     return redirect(url_for('bookings_report'))
 
+@app.route('/explore')
+def explore():
+    kota = request.args.get('kota', '')
+    db  = get_db()
+    cur = db.cursor()
+    if kota:
+        cur.execute("SELECT * FROM spots WHERE stok_booking > 0 AND lokasi LIKE %s ORDER BY rating DESC", (f'%{kota}%',))
+    else:
+        cur.execute("SELECT * FROM spots WHERE stok_booking > 0 ORDER BY rating DESC")
+    spots = cur.fetchall()
+    db.close()
+    return render_template('explore.html', spots=spots, kota=kota)
+
 @app.route('/profile')
 @login_required
 def profile():
