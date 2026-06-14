@@ -1,12 +1,13 @@
 """
 app.py – PickSpot Core Backend
-Stack : Flask + mysql-connector-python
+Stack : Flask + PyMySQL (SSL for TiDB Cloud)
 Run   : python app.py  (dev)
 """
 
 from flask import (Flask, render_template, redirect,
                    url_for, request, session, flash)
-import mysql.connector
+import pymysql
+import pymysql.cursors
 import hashlib
 from functools import wraps
 from datetime import datetime
@@ -16,17 +17,23 @@ app = Flask(__name__)
 app.secret_key = 'pickspot_s3cr3t_2025'          # ganti di production
 
 DB = dict(
-    host= "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
-    port= 4000,
-    user= "hLJX4qyXZRc23dw.root",
-    password= "7UoqtuH0kUfCjhLn",
-    database= "test"
+    host="gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+    port=4000,
+    user="hLJX4qyXZRc23dw.root",
+    password="7UoqtuH0kUfCjhLn",
+    database="sys",
+    ssl_verify_cert=True,
+    ssl={"ssl": {}},
+    connect_timeout=10
 )
 
 
 # ── Helpers ──────────────────────────────────────────────────
 def get_db():
-    return mysql.connector.connect(**DB)
+    return pymysql.connect(
+        **DB,
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
 
 def hash_pw(raw: str) -> str:
@@ -64,7 +71,7 @@ def home():
     tanggal = request.args.get('tanggal', '')
 
     db  = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
 
     if lokasi:
         cur.execute(
@@ -91,7 +98,7 @@ def login():
         password = hash_pw(request.form['password'])
 
         db  = get_db()
-        cur = db.cursor(dictionary=True)
+        cur = db.cursor()
         cur.execute("SELECT * FROM users WHERE email=%s AND password=%s", (email, password))
         user = cur.fetchone()
         db.close()
@@ -123,7 +130,7 @@ def register():
             db.commit()
             flash('Registrasi berhasil! Silakan login. 🎉', 'success')
             return redirect(url_for('login'))
-        except mysql.connector.IntegrityError:
+        except pymysql.IntegrityError:
             flash('Email sudah terdaftar.', 'error')
         finally:
             db.close()
@@ -148,17 +155,16 @@ def book_spot(id_spot):
         return redirect(url_for('home'))
 
     db  = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
     cur.execute("SELECT stok_booking FROM spots WHERE id_spot=%s", (id_spot,))
     spot = cur.fetchone()
 
     if spot and spot['stok_booking'] > 0:
-        cur2 = db.cursor()
-        cur2.execute(
+        cur.execute(
             "INSERT INTO bookings (id_user, id_spot, tanggal_waktu, status) VALUES (%s,%s,%s,'pending')",
             (session['id_user'], id_spot, datetime.now())
         )
-        cur2.execute("UPDATE spots SET stok_booking = stok_booking - 1 WHERE id_spot=%s", (id_spot,))
+        cur.execute("UPDATE spots SET stok_booking = stok_booking - 1 WHERE id_spot=%s", (id_spot,))
         db.commit()
         flash('Booking berhasil! Status: Pending. ✅', 'success')
     else:
@@ -175,7 +181,7 @@ def book_spot(id_spot):
 @role_required('admin', 'staff')
 def dashboard():
     db  = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
 
     cur.execute("SELECT COUNT(*) AS n FROM spots")
     total_spots = cur.fetchone()['n']
@@ -232,7 +238,7 @@ def add_spot():
 @role_required('admin', 'staff')
 def edit_spot(id):
     db  = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
 
     if request.method == 'POST':
         data = (
@@ -281,7 +287,7 @@ def delete_spot(id):
 @role_required('admin', 'staff')
 def bookings_report():
     db  = get_db()
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
     cur.execute("""
         SELECT b.id_booking, u.nama AS nama_user, s.nama_spot, s.lokasi,
                b.tanggal_waktu, b.status
