@@ -71,7 +71,7 @@
   {% if spots %}
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     {% for spot in spots %}
-    <div id="spot-{{ spot.id_spot }}" class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 border border-gray-50/80">
+    <div id="spot-{{ spot.id_spot }}" class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 border border-gray-50/80 flex flex-col">
       <div class="h-44 relative flex items-end
         {% if loop.index % 3 == 1 %}bg-gradient-to-br from-[#131086] via-[#131086]/80 to-[#E44E9A]/50
         {% elif loop.index % 3 == 2 %}bg-gradient-to-br from-[#1F6232] via-[#1F6232]/70 to-[#131086]/60
@@ -81,10 +81,10 @@
         <span class="absolute top-3 left-3 bg-[#1F6232] text-white text-xs font-bold px-2 py-1 rounded-full">{{ spot.stok_booking }} slot</span>
         <span class="relative z-10 m-4 bg-[#131086]/80 backdrop-blur text-white text-xs font-semibold px-3 py-1.5 rounded-xl">📍 {{ spot.lokasi }}</span>
       </div>
-      <div class="p-4">
+      <div class="p-4 flex flex-col flex-1">
         <h3 class="text-[#131086] font-black text-sm leading-tight mb-1">{{ spot.nama_spot }}</h3>
-        <p class="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">{{ spot.deskripsi or 'Spot hangout keren di ' ~ spot.lokasi ~ '.' }}</p>
-        <div class="flex items-center justify-between">
+        <p class="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2 flex-1">{{ spot.deskripsi or 'Spot hangout keren di ' ~ spot.lokasi ~ '.' }}</p>
+        <div class="flex items-center justify-between mt-auto">
           <div>
             <p class="text-[#131086]/40 text-[10px] font-semibold uppercase tracking-wide">Estimasi</p>
             <p class="text-[#131086] font-black text-sm">Rp{{ "{:,.0f}".format(spot.harga_estimasi).replace(',', '.') }}</p>
