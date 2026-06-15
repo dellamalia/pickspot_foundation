@@ -18,14 +18,22 @@
 
 <!-- ── TOP NAVBAR ─────────────────────────────────────────── -->
 <nav class="bg-[#131086] sticky top-0 z-50 shadow-lg">
-  <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center gap-1 select-none">
       <span class="text-[#E44E9A] font-black text-xl leading-none">PICK</span>
-      <span class="text-white   font-black text-xl leading-none">SPOT</span>
+      <span class="text-white font-black text-xl leading-none">SPOT</span>
       <span class="ml-1 text-base">🐱</span>
     </a>
-    <div class="flex items-center gap-3">
+
+    <!-- Desktop nav links -->
+    <div class="flex items-center gap-4">
       {% if session.get('id_user') %}
+        {% if session.get('role') == 'member' %}
+          <a href="/" class="hidden md:block text-white/80 text-sm font-semibold hover:text-white transition">Home</a>
+          <a href="/explore" class="hidden md:block text-white/80 text-sm font-semibold hover:text-white transition">Explore</a>
+          <a href="/my-bookings" class="hidden md:block text-white/80 text-sm font-semibold hover:text-white transition">My Bookings</a>
+          <a href="/profile" class="hidden md:block text-white/80 text-sm font-semibold hover:text-white transition">Profil</a>
+        {% endif %}
         {% if session.get('role') in ['admin', 'staff'] %}
           <a href="/dashboard" class="text-[#E44E9A] text-sm font-bold hover:text-white transition">Dashboard</a>
           <a href="/bookings" class="text-white/70 text-sm font-semibold hover:text-white transition">Bookings</a>
@@ -44,7 +52,7 @@
 </nav>
 
 <!-- ── FLASH MESSAGES ─────────────────────────────────────── -->
-<div class="max-w-md mx-auto px-4 pt-3 space-y-2">
+<div class="max-w-7xl mx-auto px-4 pt-3 space-y-2">
   {% with msgs = get_flashed_messages(with_categories=true) %}
     {% for cat, msg in msgs %}
     <div class="px-4 py-3 rounded-2xl text-sm font-bold
@@ -58,9 +66,9 @@
 <!-- ── PAGE CONTENT ───────────────────────────────────────── -->
 {% block content %}{% endblock %}
 
-<!-- ── BOTTOM NAV (tampil kalau sudah login sebagai member) ── -->
+<!-- ── BOTTOM NAV (mobile only) ── -->
 {% if session.get('id_user') and session.get('role') == 'member' %}
-<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-gray-100 shadow-2xl">
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-gray-100 shadow-2xl">
   <div class="max-w-md mx-auto flex justify-around py-2.5 px-4">
     <a href="/" class="flex flex-col items-center gap-0.5 group">
       <span class="text-xl">🏠</span>
