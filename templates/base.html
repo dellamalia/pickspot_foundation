@@ -67,7 +67,6 @@
 {% block content %}{% endblock %}
 
 <!-- ── BOTTOM NAV (mobile only) ── -->
-{% if session.get('id_user') and session.get('role') == 'member' %}
 <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-gray-100 shadow-2xl">
   <div class="max-w-md mx-auto flex justify-around py-2.5 px-4">
     <a href="/" class="flex flex-col items-center gap-0.5 group">
@@ -78,17 +77,38 @@
       <span class="text-xl">🔍</span>
       <span class="text-[10px] font-semibold {{ 'text-[#E44E9A] font-black' if request.path == '/explore' else 'text-gray-400' }} group-hover:text-[#131086] transition">Explore</span>
     </a>
-    <a href="/my-bookings" class="flex flex-col items-center gap-0.5 group">
-      <span class="text-xl">📋</span>
-      <span class="text-[10px] font-semibold {{ 'text-[#E44E9A] font-black' if request.path == '/my-bookings' else 'text-gray-400' }} group-hover:text-[#131086] transition">My Bookings</span>
+    {% if session.get('id_user') %}
+      {% if session.get('role') in ['admin','staff'] %}
+      <a href="/dashboard" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">📊</span>
+        <span class="text-[10px] font-semibold {{ 'text-[#E44E9A] font-black' if request.path == '/dashboard' else 'text-gray-400' }} group-hover:text-[#131086] transition">Dashboard</span>
+      </a>
+      <a href="/bookings" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">📋</span>
+        <span class="text-[10px] font-semibold {{ 'text-[#E44E9A] font-black' if request.path == '/bookings' else 'text-gray-400' }} group-hover:text-[#131086] transition">Bookings</span>
+      </a>
+      {% else %}
+      <a href="/my-bookings" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">📋</span>
+        <span class="text-[10px] font-semibold {{ 'text-[#E44E9A] font-black' if request.path == '/my-bookings' else 'text-gray-400' }} group-hover:text-[#131086] transition">My Bookings</span>
+      </a>
+      <a href="/profile" class="flex flex-col items-center gap-0.5 group">
+        <span class="text-xl">👤</span>
+        <span class="text-[10px] font-semibold {{ 'text-[#E44E9A] font-black' if request.path == '/profile' else 'text-gray-400' }} group-hover:text-[#131086] transition">Profil</span>
+      </a>
+      {% endif %}
+    {% else %}
+    <a href="/register" class="flex flex-col items-center gap-0.5 group">
+      <span class="text-xl">✨</span>
+      <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Daftar</span>
     </a>
-    <a href="/profile" class="flex flex-col items-center gap-0.5 group">
-      <span class="text-xl">👤</span>
-      <span class="text-[10px] font-semibold {{ 'text-[#E44E9A] font-black' if request.path == '/profile' else 'text-gray-400' }} group-hover:text-[#131086] transition">Profil</span>
+    <a href="/login" class="flex flex-col items-center gap-0.5 group">
+      <span class="text-xl">🔐</span>
+      <span class="text-[10px] font-semibold text-gray-400 group-hover:text-[#131086] transition">Login</span>
     </a>
+    {% endif %}
   </div>
 </nav>
-{% endif %}
 
 </body>
 </html>
