@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="max-w-md mx-auto px-4 py-6 pb-28">
-
+<div class="max-w-7xl mx-auto px-4 py-6 pb-28 md:pb-10">
   <div class="flex items-center gap-3 mb-6">
+    <button onclick="history.back()" class="text-[#E44E9A] font-black text-sm hover:underline md:hidden">← Back</button>
     <h1 class="text-[#131086] font-black text-2xl">My Bookings 📋</h1>
   </div>
-
   {% if bookings %}
-  <div class="space-y-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for b in bookings %}
     <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-50">
       <div class="flex justify-between items-start mb-2">
@@ -21,23 +20,17 @@
       </div>
       <p class="text-gray-400 text-sm mb-1">📍 {{ b.lokasi }}</p>
       <p class="text-gray-400 text-xs">🕐 {{ b.tanggal_waktu.strftime('%d %b %Y, %H:%M') }}</p>
-      <p class="text-[#131086] font-bold text-sm mt-2">
-        Rp{{ "{:,.0f}".format(b.harga_estimasi).replace(',', '.') }}
-      </p>
+      <p class="text-[#131086] font-bold text-sm mt-2">Rp{{ "{:,.0f}".format(b.harga_estimasi).replace(',', '.') }}</p>
     </div>
     {% endfor %}
   </div>
-
   {% else %}
   <div class="text-center py-20">
     <span class="text-6xl block mb-4">📋</span>
     <p class="text-[#131086] font-black text-lg">Belum ada booking</p>
     <p class="text-gray-400 text-sm mt-1">Yuk booking spot pertamamu!</p>
-    <a href="/" class="inline-block mt-4 bg-[#E44E9A] text-white font-bold px-5 py-2.5 rounded-2xl text-sm hover:bg-[#131086] transition">
-      Cari Spot
-    </a>
+    <a href="/" class="inline-block mt-4 bg-[#E44E9A] text-white font-bold px-5 py-2.5 rounded-2xl text-sm hover:bg-[#131086] transition">Cari Spot</a>
   </div>
   {% endif %}
-
 </div>
 {% endblock %}
